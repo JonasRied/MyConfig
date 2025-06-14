@@ -1,7 +1,7 @@
 /*
 @TargetNode='Kunde1.onmicrosoft.com'
 @GeneratedBy=cassi
-@GenerationDate=06/14/2025 18:41:26
+@GenerationDate=06/14/2025 18:52:48
 @GenerationHost=PAVILION
 */
 
@@ -29,7 +29,7 @@ instance of OMI_ConfigurationDocument
 
                         Author="cassi";
 
-                        GenerationDate="06/14/2025 18:41:26";
+                        GenerationDate="06/14/2025 18:52:48";
 
                         GenerationHost="PAVILION";
 

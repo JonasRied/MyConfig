@@ -42,6 +42,8 @@ function Invoke-M365Build {
     if($null -eq $config) {
         throw
     }
+
+    Add-M365BuildMetaData -ConfigurationData $configData -Path "$(Get-Location)\M365Configuration" -ErrorAction Stop
 }
 
 function Install-M365BuildRequirements {
@@ -88,6 +90,29 @@ function Get-M365ConfigurationData {
         AllNodes = [array]($configData | ConvertFrom-Yaml).AllNodes
     } 
     return $configData
+}
+
+function Add-M365BuildMetaData {
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]$ConfigurationData,
+
+        [Parameter(Mandatory = $true)]
+        [System.string]$Path
+    )
+
+    $ConfigurationData.AllNodes | ConvertTo-Json -Depth 10 | Out-File -FilePath "$Path\metadata.json" -Encoding UTF8}
+
+function Add-M365ConfigurationNode {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$NodeName,
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Authentication
+    )
+
+    Write-Host "Adding M365Build configuration node: $NodeName"
+    Write-Host "Authentication Data: $($Authentication | Out-String)"
 }
 
 function Add-M365ConfigurationModule {

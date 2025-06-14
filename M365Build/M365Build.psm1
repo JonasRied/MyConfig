@@ -14,6 +14,10 @@ function Invoke-M365Build {
         [System.String]
         $RequirementsFile,
 
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $outPutPath,
+
         [Parameter(Mandatory = $false)]
         [switch]
         $InstallRequirements
@@ -37,13 +41,13 @@ function Invoke-M365Build {
 
     Write-Host "Building configuration from: $configFile"
     . $configFile
-    $config = M365Configuration -ConfigurationData $configData
+    $config = M365Configuration -ConfigurationData $configData -OutPutPath $OutPutPath
 
     if($null -eq $config) {
         throw
     }
 
-    Add-M365BuildMetaData -ConfigurationData $configData -Path "$(Get-Location)\M365Configuration" -ErrorAction Stop
+    Add-M365BuildMetaData -ConfigurationData $configData -Path $OutPutPath -ErrorAction Stop
 }
 
 function Install-M365BuildRequirements {

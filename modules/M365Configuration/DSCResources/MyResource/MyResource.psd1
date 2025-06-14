@@ -1,0 +1,1 @@
+RootModule = 'MyResource.schema.psm1'

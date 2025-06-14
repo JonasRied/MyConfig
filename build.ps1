@@ -1,26 +1,16 @@
 [CmdletBinding()]
 param (
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
     [System.String]
     $Id,
 
-    [Parameter()]
+    [Parameter(Mandatory = $false)]
     [switch]
     $InstallRequirements
 )
 
-$modules = "$PSScriptRoot\modules"
+#Requires -PSEdition Desktop
 
-$modulePath = $env:PSModulePath -split ';'
+Import-Module -Name "$PSScriptRoot\M365Build\M365Build.psm1" -Force -ErrorAction Stop
 
-if ($modulePath -notcontains $modules) {
-    $env:PSModulePath += ";$modules"
-    Write-Verbose "Added '$modules' to the PSModulePath."
-}
-
-Import-Module -Name M365Build -Force -ErrorAction Stop
-
-if($installRequirements) {
-    Write-Verbose "Installing M365Build requirements..."
-    Install-M365BuildRequirements -Path .\requirements.json
-}
+Invoke-M365Build @PSBoundParameters -ModulesPath "$PSScriptRoot\modules" -RequirementsFile "$PSScriptRoot\requirements.json"

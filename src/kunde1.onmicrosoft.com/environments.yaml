@@ -1,5 +1,8 @@
 AllNodes:
 - NodeName: '*'
+  Authentication:
+    CertificateThumbprint: '0000000000000000000000000000000000000000'
+    ApplicationId: '00000000-0000-0000-0000-000000000000'
 - NodeName: 'Kunde1.onmicrosoft.com'
   Environment: Production
 - NodeName: 'Kunde1-stage.onmicrosoft.com'

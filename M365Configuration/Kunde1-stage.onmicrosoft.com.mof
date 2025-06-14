@@ -1,0 +1,38 @@
+/*
+@TargetNode='Kunde1-stage.onmicrosoft.com'
+@GeneratedBy=cassi
+@GenerationDate=06/14/2025 18:41:26
+@GenerationHost=PAVILION
+*/
+
+instance of MSFT_FileDirectoryConfiguration as $MSFT_FileDirectoryConfiguration1ref
+{
+Contents = "Kunde1-stage.onmicrosoft.com\n0000000000000000000000000000000000000000\n00000000-0000-0000-0000-000000000000";
+ Type = "File";
+ ResourceID = "[File]ExampleFile::[MyResource]ExampleResource";
+ Ensure = "Present";
+ ModuleName = "PSDesiredStateConfiguration";
+ SourceInfo = "C:\\code\\MyConfig\\Modules\\M365Configuration\\DscResources\\MyResource\\MyResource.schema.psm1::10::9::File";
+ DestinationPath = "C:\\Temp\\example.txt";
+
+ModuleVersion = "1.0";
+ ConfigurationName = "M365Configuration";
+};
+instance of OMI_ConfigurationDocument
+
+                    {
+ Version="2.0.0";
+
+                        MinimumCompatibleVersion = "1.0.0";
+
+                        CompatibleVersionAdditionalProperties= {"Omi_BaseResource:ConfigurationName"};
+
+                        Author="cassi";
+
+                        GenerationDate="06/14/2025 18:41:26";
+
+                        GenerationHost="PAVILION";
+
+                        Name="M365Configuration";
+
+                    };

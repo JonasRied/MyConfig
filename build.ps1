@@ -9,8 +9,14 @@ param (
     $InstallRequirements
 )
 
-#Requires -PSEdition Desktop
-
 Import-Module -Name "$PSScriptRoot\M365Build\M365Build.psm1" -Force -ErrorAction Stop
 
-Invoke-M365Build @PSBoundParameters -ModulesPath "$PSScriptRoot\modules" -RequirementsFile "$PSScriptRoot\requirements.json"
+try {
+    Invoke-M365Build -Path "$PSScriptRoot\src\$Id" -ModulesPath "$PSScriptRoot\modules" -RequirementsFile "$PSScriptRoot\requirements.json" -InstallRequirements:$InstallRequirements
+}
+catch {
+    Write-Error "Failed to build configuration: $_"
+    return
+}
+
+Write-Host "Build completed."

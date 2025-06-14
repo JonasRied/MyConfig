@@ -1,12 +1,10 @@
-#Requires -PSEdition Desktop
-
 function Invoke-M365Build {
 
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Id,
+        $Path,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -28,11 +26,21 @@ function Invoke-M365Build {
         Write-Verbose "Added '$ModulesPath' to the PSModulePath."
     }
 
-    Import-Module -Name M365Build -Force -ErrorAction Stop
-
     if ($InstallRequirements) {
         Write-Verbose "Installing M365Build requirements..."
         Install-M365BuildRequirements -RequirementsFile $RequirementsFile
+    }
+    
+    $Global:configData = Get-M365ConfigurationData -Path $Path -ErrorAction Stop
+
+    $configFile = Join-Path -Path $Path -ChildPath 'configuration.ps1'
+
+    Write-Host "Building configuration from: $configFile"
+    . $configFile
+    $config = M365Configuration -ConfigurationData $configData
+
+    if($null -eq $config) {
+        throw
     }
 }
 
@@ -53,7 +61,7 @@ function Install-M365BuildRequirements {
     $requirements = Get-Content -Path $RequirementsFile | ConvertFrom-Json
     
     foreach ($module in $requirements.modules) {
-        Write-Host "Installing module: $($module.Name) version $($module.Version)"
+        Write-Host "Installing $($module.Name) version $($module.Version)"
         # If the module is not found, it will be installed from the PowerShell Gallery
         Install-Module -Name $module.Name -RequiredVersion $module.Version -Force
     }
@@ -67,16 +75,19 @@ function Get-M365ConfigurationData {
         [string]$Path
     )
 
-    Write-Host "Retrieving M365Build configuration data from path: $Path"
-    
-    # Example of retrieving configuration data, replace with actual logic
-    # $configData = Get-Content -Path "$Path\config.json" | ConvertFrom-Json
+    $dataFile = Join-Path -Path $Path -ChildPath 'environments.yaml'
 
-    # Return dummy data for demonstration purposes
-    return @{
-        Id      = "SampleId"
-        Version = "1.0.0"
+    if (-Not (Test-Path -Path $dataFile)) {
+        Write-Error "Configuration file not found at path: $dataFile"
+        return $null
     }
+
+    Write-Host "Reading configuration data from: $dataFile"
+    $configData = Get-Content -Path $dataFile -Raw
+    $configData = @{
+        AllNodes = [array]($configData | ConvertFrom-Yaml).AllNodes
+    } 
+    return $configData
 }
 
 function Add-M365ConfigurationModule {

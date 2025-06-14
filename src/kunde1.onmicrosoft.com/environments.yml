@@ -1,0 +1,6 @@
+AllNodes:
+- NodeName: '*'
+- NodeName: 'Kunde1.onmicrosoft.com'
+  Environment: Production
+- NodeName: 'Kunde1-stage.onmicrosoft.com'
+  Environment: Staging

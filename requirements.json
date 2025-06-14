@@ -1,0 +1,12 @@
+{
+  "modules": [
+    {
+      "Name": "Microsoft365DSC",
+      "Version": "1.25.611.1"
+    },
+    {
+      "Name": "powershell-yaml",
+      "Version": "0.4.12"
+    }
+  ]
+}

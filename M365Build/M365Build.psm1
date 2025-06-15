@@ -147,14 +147,19 @@ Configuration #RESOURCE_NAME#
 
     Node $AllNodes.NodeName
     {
-        File ExampleFile {
-            DestinationPath       = 'C:\Temp\example.txt'
-            Contents              = "Hello from $($Node.NodeName)"
-            Ensure                = 'Present'
-            Type                  = 'File'
-            TenantId              = $Node.NodeName
-            ApplicationId         = $Node.Authentication.ApplicationId
-            CertificateThumbprint = $Node.Authentication.CertificateThumbprint
+        AADUser 'ConfigureJohnSMith' {
+            UserPrincipalName     = "John.Smith@$Env:M365_TenantId"
+            FirstName             = "John"
+            LastName              = "Smith"
+            DisplayName           = "John J. Smith"
+            City                  = "Gatineau"
+            Country               = "Canada"
+            Office                = "Ottawa - Queen"
+            UsageLocation         = "US"
+            Ensure                = "Present"
+            TenantId              = $Env:M365_TenantId
+            ApplicationId         = $Env:M365_ApplicationId
+            CertificateThumbprint = $Env:M365_CertificateThumbprint
         }
     }
 }

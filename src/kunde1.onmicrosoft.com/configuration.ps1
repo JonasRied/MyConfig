@@ -11,5 +11,6 @@ Configuration OutPut {
 
         # Use resources from the M365Configuration module to build the configuration
         MyResource ExampleResource {}
+        MySecondResource ExampleSecondResource {}
     }
 }

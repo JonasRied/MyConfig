@@ -4,7 +4,6 @@ Configuration MyResource
 
     Node $AllNodes.NodeName
     {
-
         $AuthenticationData = $Node.Authentication
 
         File ExampleFile

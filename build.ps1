@@ -16,7 +16,6 @@ try {
         -Path "$PSScriptRoot\src\$Id" `
         -ModulesPath "$PSScriptRoot\modules" `
         -RequirementsFile "$PSScriptRoot\requirements.json" `
-        -OutPutPath "$PSScriptRoot\output" `
         -InstallRequirements:$InstallRequirements
 }
 catch {

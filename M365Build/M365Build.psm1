@@ -14,10 +14,6 @@ function Invoke-M365Build {
         [System.String]
         $RequirementsFile,
 
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $outPutPath,
-
         [Parameter(Mandatory = $false)]
         [switch]
         $InstallRequirements
@@ -41,19 +37,23 @@ function Invoke-M365Build {
 
     Write-Host "Building configuration from: $configFile"
     . $configFile
-    $config = M365Configuration -ConfigurationData $configData -OutPutPath $OutPutPath
+    $config = OutPut -ConfigurationData $configData
 
     if($null -eq $config) {
         throw
     }
 
+    $OutPutPath = Join-Path -Path (Get-Location) -ChildPath 'Output'
     Add-M365BuildMetaData -ConfigurationData $configData -Path $OutPutPath -ErrorAction Stop
 }
 
 function Install-M365BuildRequirements {
     param (
         [Parameter(Mandatory = $true)]
-        [string]$RequirementsFile
+        [string]$RequirementsFile,
+
+        [Parameter(Mandatory = $false)]
+        [string]$Repository
     )
 
     Write-Host "Installing M365Build requirements..."
@@ -63,13 +63,22 @@ function Install-M365BuildRequirements {
         return
     }
 
+    $installModuleCommonParams = @{
+        Scope = 'CurrentUser'
+        Force = $true
+    }
+
+    if ($Repository) {
+        $installModuleCommonParams.Repository = $Repository
+    }
+
     # reading requirements from a JSON file
     $requirements = Get-Content -Path $RequirementsFile | ConvertFrom-Json
     
-    foreach ($module in $requirements.modules) {
+    foreach ($module in $requirements) {
         Write-Host "Installing $($module.Name) version $($module.Version)"
-        # If the module is not found, it will be installed from the PowerShell Gallery
-        Install-Module -Name $module.Name -RequiredVersion $module.Version -Force
+        # If the module is not found, it will be installed from the PowerShell Gallery or the specified repository
+        Install-Module @installModuleCommonParams -Name $module.Name -RequiredVersion $module.Version -ErrorAction Stop
     }
 
     Write-Host "Requirements installed successfully."

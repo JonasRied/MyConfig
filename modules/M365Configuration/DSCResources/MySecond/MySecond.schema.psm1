@@ -9,9 +9,10 @@ Configuration MySecond
             Contents              = "Hello from $($Node.NodeName)"
             Ensure                = 'Present'
             Type                  = 'File'
-            TenantId              = $Node.NodeName
-            ApplicationId         = $Node.Authentication.ApplicationId
-            CertificateThumbprint = $Node.Authentication.CertificateThumbprint
+            TenantId              = $Env:M365_TenantId
+            ApplicationId         = $Env:M365_ApplicationId
+            CertificateThumbprint = $Env:M365_CertificateThumbprint
         }
     }
 }
+    

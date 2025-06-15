@@ -8,7 +8,7 @@ Configuration MyResource {
 
         File ExampleFile {
             DestinationPath = 'C:\Temp\example.txt'
-            Contents        = "$($Node.NodeName)`n$($AuthenticationData.CertificateThumbprint)`n$($AuthenticationData.ApplicationId)"
+            Contents        = "$Env:M365_TenantId`n$Env:M365_CertificateThumbprint`n$Env:M365_ApplicationId"
             Ensure          = 'Present'
             Type            = 'File'
         }

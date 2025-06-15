@@ -114,7 +114,10 @@ function Add-M365BuildMetaData {
         [System.string]$Path
     )
 
-    $ConfigurationData.AllNodes | ConvertTo-Json -Depth 10 | Out-File -FilePath "$Path\metadata.json" -Encoding UTF8}
+    $filePath = Join-Path -Path $Path -ChildPath 'metadata.json'
+    $ConfigurationData.AllNodes | ConvertTo-Json -Depth 10 | Out-File -FilePath $filePath -Encoding UTF8
+    Write-Host "Metadata added to $filePath"
+}
 
 function Add-M365ConfigurationNode {
     param (

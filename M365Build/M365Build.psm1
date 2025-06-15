@@ -8,15 +8,7 @@ function Invoke-M365Build {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ModulesPath,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $RequirementsFile,
-
-        [Parameter(Mandatory = $false)]
-        [switch]
-        $InstallRequirements
+        $ModulesPath
     )
 
     $modulePath = $env:PSModulePath -split ';'
@@ -24,11 +16,6 @@ function Invoke-M365Build {
     if ($modulePath -notcontains $ModulesPath) {
         $env:PSModulePath += ";$ModulesPath"
         Write-Verbose "Added '$ModulesPath' to the PSModulePath."
-    }
-
-    if ($InstallRequirements) {
-        Write-Verbose "Installing M365Build requirements..."
-        Install-M365BuildRequirements -RequirementsFile $RequirementsFile
     }
     
     $Global:configData = Get-M365ConfigurationData -Path $Path -ErrorAction Stop
@@ -153,7 +140,7 @@ function Add-M365ConfigurationResource {
         [System.Management.Automation.PSModuleInfo]$Module
     )
 
-$template = @'
+    $template = @'
 Configuration #RESOURCE_NAME#
 {
     Import-DscResource -ModuleName Microsoft365DSC

@@ -39,7 +39,7 @@ function Invoke-M365Build {
     . $configFile
     $config = OutPut -ConfigurationData $configData
 
-    if($null -eq $config) {
+    if ($null -eq $config) {
         throw
     }
 
@@ -115,7 +115,15 @@ function Add-M365BuildMetaData {
     )
 
     $filePath = Join-Path -Path $Path -ChildPath 'metadata.json'
-    $ConfigurationData.AllNodes | ConvertTo-Json -Depth 10 | Out-File -FilePath $filePath -Encoding UTF8
+
+    $ConfigurationData.AllNodes | ForEach-Object {
+        @{
+            NodeName       = $_.NodeName
+            Environment    = $_.Environment
+            Authentication = $_.Authentication
+        }
+    } | ConvertTo-Json -Depth 10 | Out-File -FilePath $filePath -Encoding UTF8
+    
     Write-Host "Metadata added to $filePath"
 }
 

@@ -123,20 +123,8 @@ function Add-M365BuildMetaData {
             Authentication = $_.Authentication
         }
     } | ConvertTo-Json -Depth 10 | Out-File -FilePath $filePath -Encoding UTF8
-    
+
     Write-Host "Metadata added to $filePath"
-}
-
-function Add-M365ConfigurationNode {
-    param (
-        [Parameter(Mandatory = $true)]
-        [string]$NodeName,
-        [Parameter(Mandatory = $true)]
-        [hashtable]$Authentication
-    )
-
-    Write-Host "Adding M365Build configuration node: $NodeName"
-    Write-Host "Authentication Data: $($Authentication | Out-String)"
 }
 
 function Add-M365ConfigurationModule {
@@ -151,14 +139,63 @@ function Add-M365ConfigurationModule {
 }
 
 function Add-M365ConfigurationResource {
+    <#
+    .DESCRIPTION     
+        Adds a resource to the M365Build configuration. 
+    .EXAMPLE
+        Get-Module M365Configuration -ListAvailable | Add-M365ConfigurationResource -Name "MyResource"
+    #>
     param (
         [Parameter(Mandatory = $true)]
-        [string]$ResourceName,
-        [Parameter(Mandatory = $true)]
-        [string]$ResourceType
+        [string]$Name,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [System.Management.Automation.PSModuleInfo]$Module
     )
 
-    Write-Host "Adding M365Build configuration resource: $ResourceName, Type: $ResourceType"
+$template = @'
+Configuration #RESOURCE_NAME#
+{
+    Import-DscResource -ModuleName Microsoft365DSC
+
+    Node $AllNodes.NodeName
+    {
+        File ExampleFile {
+            DestinationPath       = 'C:\Temp\example.txt'
+            Contents              = "Hello from $($Node.NodeName)"
+            Ensure                = 'Present'
+            Type                  = 'File'
+            TenantId              = $Node.NodeName
+            ApplicationId         = $Node.Authentication.ApplicationId
+            CertificateThumbprint = $Node.Authentication.CertificateThumbprint
+        }
+    }
+}
+'@
+
+    $resourceFolder = Join-Path -Path $Module.ModuleBase -ChildPath "DSCResources\$Name"
+    New-Item -Path $resourceFolder -ItemType Directory | Out-Null
+
+    $resourcePath = Join-Path -Path $resourceFolder -ChildPath "$Name.schema.psm1"
+    $schemaFile = New-Item -Path $resourcePath -ItemType File
+    $template.Replace('#RESOURCE_NAME#', $Name) | Out-File -FilePath $schemaFile.FullName -Encoding UTF8
+
+    New-ModuleManifest -Path (Join-Path -Path $resourceFolder -ChildPath "$Name.psd1") `
+        -RootModule "$Name.schema.psm1" `
+        -ModuleVersion '0.0.0' `
+        -PowerShellVersion '5.1' `
+        -CompatiblePSEditions 'Core', 'Desktop' `
+        -RequiredModules @('Microsoft365DSC')
+
+    Write-Host "Resource '$Name' added to module '$($Module.Name)'."
+    
 }
 
-Export-ModuleMember -Function '*'
+Export-ModuleMember -Function @(
+    'Invoke-M365Build',
+    'Install-M365BuildRequirements',
+    'Get-M365ConfigurationData',
+    # 'Add-M365BuildMetaData',
+    'Add-M365ConfigurationModule',
+    'Add-M365ConfigurationResource'
+)
